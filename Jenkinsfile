@@ -23,12 +23,20 @@ pipeline {
             steps {
                 script {
                     git_commit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    image.push(git_commit)
-                    image.push("latest")
+                    tag = "${branch_name}-${git_commit}"
+                    image.push(tag)
                 }
             }
         }
-
+        stage("Run newly created Docker image in Kubernetes Cluster") {
+            steps {
+                script {
+                    image_name = "synergyx/demo-nodejs-app:${tag}"
+                    sh "kubectl set image deployment/demo-nodejs-app demo-nodejs-app=${image_name}"
+                    sh "kubectl rollout status deployment/demo-nodejs-app"
+                }
+            }
+        }
     
     }
 }
