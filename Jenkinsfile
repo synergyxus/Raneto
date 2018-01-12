@@ -9,7 +9,7 @@ pipeline {
 
 
     stages {
-        stage("Docker Build") {
+        stage("Docker Build Image") {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-creds') {
@@ -19,7 +19,7 @@ pipeline {
             }
         }
 
-        stage("Publish to Docker Hub") {
+        stage("Publish Image to Docker Hub") {
             steps {
                 script {
                     git_commit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
